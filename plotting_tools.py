@@ -3,6 +3,19 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
+def plot_multiple(self, layout, X, Y, X2 = [], Y2 = [], title = "", scale="log", marker = None, revert = False):
+    canvas = PlotWidget(xlabel="Detector position (pixels)", ylabel="Intensity (arb. u)",
+                        title = "Horizontal Scan")
+    figure = canvas.figure
+    plotgGraphFigure(X, Y, canvas, revert=revert, title=title)
+    if X2 != [] and Y2 != []:
+        print("Doing two")
+        plotgGraphFigure(X2, Y2, canvas, revert=revert, title=title)
+    layout.addWidget(canvas)
+    figurecanvas = [figure, canvas]
+    self.toolbar = NavigationToolbar(canvas, self)
+    layout.addWidget(self.toolbar)
+    return figurecanvas
 
 
 def plotGraphOnCanvas(self, layout, X, Y, title = "", scale="log", marker = None, revert = False):
@@ -19,8 +32,6 @@ def plotGraphOnCanvas(self, layout, X, Y, title = "", scale="log", marker = None
 def plotgGraphFigure(X, Y, canvas, filename="", xlim=None, title="", scale="log",marker=None, linestyle="solid",
                      revert = False):
     fig = canvas.theplot
-    print(len(X))
-    print(len(Y))
     fig.plot(X, Y, label=filename, linestyle=linestyle, marker=marker)
     if revert:
         fig.invert_xaxis()
@@ -29,13 +40,6 @@ def plotgGraphFigure(X, Y, canvas, filename="", xlim=None, title="", scale="log"
     canvas.theplot.set_yscale(scale)
 
 
-
-def plotFigure(data, canvas, filename="", xlim=None, title="", scale="linear",marker=None, linestyle="solid"):
-    fig = canvas.theplot
-    fig.imshow(data, cmap='gray_r', norm=LogNorm())
-    canvas.theplot.set_title(title)
-    canvas.theplot.set_xlim(xlim)
-    canvas.theplot.set_yscale(scale)
 
 
 class PlotWidget(FigureCanvas):

@@ -11,14 +11,21 @@ def load_file(self):
     if file != "":
         path = os.path.dirname(file)
         filename = Path(file).name
+        self.data.filename = filename
         os.chdir(path)
         data = get_data(file)
         self.data.xdata = data[0]
         self.data.ydata = data[1]
+        self.sort_data()
         layout = self.graphlayout
         self.clearLayout(self.graphlayout)
         self.figurecanvas = plotting_tools.plotGraphOnCanvas(self, layout, self.data.xdata, self.data.ydata,
                                                              title=filename, scale="log", marker=None)
+        self.figurecanvas[1].canvas.mpl_connect('button_press_event', self.on_press)
+        self.figurecanvas[1].canvas.mpl_connect('motion_notify_event', self.on_hover)
+        self.figurecanvas[1].canvas.mpl_connect('button_release_event', self.on_release)
+
+
 
 def get_data(path):
     seperator = "\t"
