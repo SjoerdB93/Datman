@@ -2,13 +2,9 @@
 import sys
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5 import QtGui
 import plotting_tools
 from data import Data
 import datman
-import dataset
-from pathlib import Path
-import os
 import numpy as np
 Ui_MainWindow, QtBaseClass = uic.loadUiType("form.ui")
 
