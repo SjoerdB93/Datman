@@ -6,6 +6,9 @@ from PyQt5 import QtGui
 import plotting_tools
 from data import Data
 import datman
+import dataset
+from pathlib import Path
+import os
 import numpy as np
 Ui_MainWindow, QtBaseClass = uic.loadUiType("form.ui")
 
@@ -15,6 +18,8 @@ class CallUI(QtBaseClass, Ui_MainWindow):
     def __init__(self):
         QtBaseClass.__init__(self)
         Ui_MainWindow.__init__(self)
+        self.figurecanvas = None
+        self.datadict = {}
         self.setupUi(self)
         self.clicked = False
         self.data = Data()
@@ -26,6 +31,7 @@ class CallUI(QtBaseClass, Ui_MainWindow):
         # Connect File actions
         self.load_button.clicked.connect(lambda: datman.load_file(self))
         self.cut_data_button.clicked.connect(self.cut_data)
+        self.remove_button.clicked.connect(self.remove_sample)
         self.save_button.clicked.connect(self.save_data)
 
     def clearLayout(self, layout):
@@ -40,11 +46,20 @@ class CallUI(QtBaseClass, Ui_MainWindow):
 
     def on_hover(self, event):
         if self.clicked == True:
+            print("Dragging now")
             self.stopx = event.xdata
 
-    def sort_data(self):
-        bar_list = {"x": self.data.xdata, "y": self.data.ydata}
+    def remove_sample(self):
+        datman.delete_selected(self)
+        key_to_remove = self.open_item_list.currentItem().text()
+        del(self.datadict[key_to_remove])
+        self.open_item_list.takeItem(self.open_item_list.currentRow())
+        self.plot_figure()
+
+    def sort_data(self, x, y):
+        bar_list = {"x": x, "y": y}
         sorted = self.sort_bar(bar_list)
+        return sorted["x"], sorted["y"]
         self.data.xdata = sorted["x"]
         self.data.ydata = sorted["y"]
 
@@ -58,12 +73,27 @@ class CallUI(QtBaseClass, Ui_MainWindow):
         return {"x": sorted_x, "y": sorted_y}
 
     def save_data(self):
-        path = self.saveFileDialog()
-        filename = path[0]
-        if filename[-4:] != ".txt":
-            filename = filename + ".txt"
-        array = np.stack([self.data.xdata, self.data.ydata], axis=1)
-        np.savetxt(filename, array, delimiter="\t")
+        datman.delete_selected(self)
+        if len(self.datadict) == 1:
+            for key,item in self.datadict.items():
+                xdata = item.xdata
+                ydata = item.ydata
+            path = self.saveFileDialog()
+            filename = path[0]
+            if filename[-4:] != ".txt":
+                filename = filename + ".txt"
+            array = np.stack([xdata, ydata], axis=1)
+            np.savetxt(filename, array, delimiter="\t")
+        elif len(self.datadict) > 1:
+            path = self.saveFileDialog()[0]
+            for key,item in self.datadict.items():
+                xdata = item.xdata
+                ydata = item.ydata
+                filename = item.filename
+                filename = filename.split(".")[0]
+                filename = f"{path}{filename}_edited.txt"
+                array = np.stack([xdata, ydata], axis=1)
+                np.savetxt(filename, array, delimiter="\t")
 
     def saveFileDialog(self, documenttype="Text file (*.txt)"):
         options = QFileDialog.Options()
@@ -78,53 +108,70 @@ class CallUI(QtBaseClass, Ui_MainWindow):
     def on_release(self, event):
         self.clicked = False
         self.select_data()
-        self.plot_figure()
+        # self.plot_figure()
 
-    def plot_figure(self):
-        layout = self.graphlayout
+
+    def plot_figure(self, layout=None, filename = "Test"):
+        if layout == None:
+            layout = self.graphlayout
         self.clearLayout(layout)
-
-        self.figurecanvas = plotting_tools.plot_multiple(self, layout, self.data.xdata, self.data.ydata,
-                                                         X2 = self.data.xdata_selected, Y2 = self.data.ydata_selected, title=self.data.filename,
-                                                         scale="log", marker=None)
+        self.figurecanvas = plotting_tools.plotGraphOnCanvas(self, layout,
+                                         title=filename, scale="log", marker=None)
         self.figurecanvas[1].canvas.mpl_connect('button_press_event', self.on_press)
         self.figurecanvas[1].canvas.mpl_connect('motion_notify_event', self.on_hover)
         self.figurecanvas[1].canvas.mpl_connect('button_release_event', self.on_release)
 
 
     def cut_data(self):
-        new_x = []
-        new_y = []
-        if self.data.xdata_selected != [] and self.data.ydata_selected != []:
-            for index, (valuex, valuey) in enumerate(zip(self.data.xdata, self.data.ydata)):
-                if valuex < min(self.data.xdata_selected) or valuex > max(self.data.xdata_selected):
-                    new_x.append(valuex)
-                    new_y.append(valuey)
-            self.data.xdata = new_x
-            self.data.ydata = new_y
-        self.data.xdata_selected = []
-        self.data.ydata_selected = []
+        for key, item in self.datadict.items():
+            xdata = item.xdata
+            ydata = item.ydata
+            new_x = []
+            new_y = []
+            if f"{key}_selected" in self.datadict:
+                selected_item = self.datadict[f"{key}_selected"]
+                print("Found" + key)
+                for index, (valuex, valuey) in enumerate(zip(xdata, ydata)):
+                    if valuex < min(selected_item.xdata) or valuex > max(selected_item.xdata):
+                        new_x.append(valuex)
+                        new_y.append(valuey)
+                item.xdata = new_x
+                item.ydata = new_y
+        datman.delete_selected(self)
         self.plot_figure()
 
 
     def select_data(self):
-        selected_data = [[], []]
-        found_start = False
-        found_stop = False
-        print(self.data.xdata)
-        for index, value in enumerate(self.data.xdata):
-            if value > self.startx and not found_start:
-                start_index = index
-                found_start = True
-            if value > self.stopx and not found_stop:
-                stop_index = index
-                found_stop = True
-        print(f"len is {len(self.data.xdata[start_index:stop_index])}")
-        print(start_index)
-        print(stop_index)
-        self.data.xdata_selected = self.data.xdata[start_index:stop_index]
-        self.data.ydata_selected = self.data.ydata[start_index:stop_index]
+        datman.delete_selected(self)
+        selected_dict = {}
+        startx = min(self.startx, self.stopx)
+        stopx = max(self.startx, self.stopx)
+        for key, item in self.datadict.items():
+            xdata = item.xdata
+            ydata = item.ydata
+            xdata, ydata = self.sort_data(xdata, ydata)
+            start_index = 0
+            stop_index = 0
+            found_start = False
+            found_stop = False
 
+            for index, value in enumerate(xdata):
+                if value > startx and not found_start:
+                    start_index = index
+                    found_start = True
+                if value > stopx and not found_stop:
+                    stop_index = index
+                    found_stop = True
+            selected_data = Data()
+            selected_data.xdata = xdata[start_index:stop_index]
+            selected_data.ydata = ydata[start_index:stop_index]
+            if len(selected_data.xdata) > 0:
+                selected_dict[f"{key}_selected"] = selected_data
+        if len(selected_dict) > 0:
+            print(selected_dict.keys())
+            self.datadict.update(selected_dict)
+            self.clearLayout(self.graphlayout)
+            self.plot_figure()
 
 def setUpWindow():
     app = QtWidgets.QApplication(sys.argv)
