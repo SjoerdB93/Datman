@@ -10,3 +10,11 @@ For details see https://www.gnu.org/licenses/gpl-3.0.html
 
 # Datman
 Data manipulator, will mainly be useful for plotting graphs and doing basic manipulation on them such as cutting, translations and multiplications.
+
+Early alpha version. The following features are implemented at the moment:
+- Opening two-column text files with XY-data
+- Selecting data by clicking and dragging
+- Cutting selected data from graph
+- Saving new edited data as txt file
+
+Planned features include both translation and multiplication of both X and Y axis at least.
