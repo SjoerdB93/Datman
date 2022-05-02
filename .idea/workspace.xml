@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dcc4e18e-91a2-4c94-93eb-8a836b5767b7" name="Changes" comment="Added following functionalities: Normalize data, center data, vertical shift, select/unselect data.">
+    <list default="true" id="dcc4e18e-91a2-4c94-93eb-8a836b5767b7" name="Changes" comment="Fixed a bug where filename when saving multiple files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CallUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/CallUI.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datman.py" beforeDir="false" afterPath="$PROJECT_DIR$/datman.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/form.ui" beforeDir="false" afterPath="$PROJECT_DIR$/form.ui" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/plotting_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/plotting_tools.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +139,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651510179484</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Fixed a bug where filename when saving multiple files">
+      <created>1651514969263</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1651514969263</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -156,6 +164,7 @@
     <MESSAGE value="Added ability to deal with multiple datasets at once" />
     <MESSAGE value="Removed unused imports" />
     <MESSAGE value="Added following functionalities: Normalize data, center data, vertical shift, select/unselect data." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added following functionalities: Normalize data, center data, vertical shift, select/unselect data." />
+    <MESSAGE value="Fixed a bug where filename when saving multiple files" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a bug where filename when saving multiple files" />
   </component>
 </project>

@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 
 
 def plotGraphOnCanvas(self, layout, title = "", scale="log", marker = None, revert = False):
-    canvas = PlotWidget(xlabel="Detector position (pixels)", ylabel="Intensity (arb. u)",
+    canvas = PlotWidget(xlabel="X value", ylabel="Y value",
                         title = "Horizontal Scan")
     figure = canvas.figure
     for key, item in self.datadict.items():
