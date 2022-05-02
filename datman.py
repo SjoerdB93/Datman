@@ -2,9 +2,15 @@ import plotting_tools
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5 import QtGui
+import CallUI
 from pathlib import Path
 import os
 from data import Data
+
+def select_data_button(self):
+    if not self.selection_button.isChecked():
+        delete_selected(self)
+        self.plot_figure()
 
 def delete_selected(self):
     key_list = []
@@ -14,30 +20,77 @@ def delete_selected(self):
     for key in key_list:
         del(self.datadict[key])
 
-def load_file(self):
-    file = get_path()
+def load_files(self):
+    files = get_path(self)
+    open_selection(self, files)
+
+def normalize_data(self):
+    delete_selected(self)
+    for key, item in self.datadict.items():
+        item.ydata = normalize(item.ydata)
+    self.plot_figure()
+
+def shift_vertically(self):
+    delete_selected(self)
+    shifter = 1
+    shift_value = 10000
+    for key, item in self.datadict.items():
+        item.ydata = [value * shifter for value in item.ydata]
+        shifter *= shift_value
+    self.plot_figure()
+
+def center_data(self):
+    delete_selected(self)
+    for key, item in self.datadict.items():
+        max_value = max(item.ydata)
+        middle_index = item.ydata.index(max_value)
+        middle_value = item.xdata[middle_index]
+        item.xdata = [coordinate - middle_value for coordinate in item.xdata]
+    self.plot_figure()
+
+def normalize(ydata):
+    max_y = max(ydata)
+    new_y = [value / max_y for value in ydata]
+    return new_y
+
+def cut_data(self):
+    for key, item in self.datadict.items():
+        xdata = item.xdata
+        ydata = item.ydata
+        new_x = []
+        new_y = []
+        if f"{key}_selected" in self.datadict:
+            selected_item = self.datadict[f"{key}_selected"]
+            for index, (valuex, valuey) in enumerate(zip(xdata, ydata)):
+                if valuex < min(selected_item.xdata) or valuex > max(selected_item.xdata):
+                    new_x.append(valuex)
+                    new_y.append(valuey)
+            item.xdata = new_x
+            item.ydata = new_y
+    delete_selected(self)
+    self.plot_figure()
 
 
-    if file != "":
-        delete_selected(self)
-        path = os.path.dirname(file)
-        filename = Path(file).name
-        self.data.filename = filename
-        os.chdir(path)
-        data = get_data(file)
-        data.filename = filename
-        if filename not in self.datadict:
-            self.datadict[filename] = data
-            self.open_item_list.addItem(filename)
-        layout = self.graphlayout
-        self.clearLayout(self.graphlayout)
-        self.figurecanvas = plotting_tools.plotGraphOnCanvas(self, layout,
-                                                             title=filename, scale="log", marker=None)
-        self.figurecanvas[1].canvas.mpl_connect('button_press_event', self.on_press)
-        self.figurecanvas[1].canvas.mpl_connect('motion_notify_event', self.on_hover)
-        self.figurecanvas[1].canvas.mpl_connect('button_release_event', self.on_release)
-
-
+def open_selection(self, files):
+    for file in files:
+        if file != "":
+            delete_selected(self)
+            path = os.path.dirname(file)
+            filename = Path(file).name
+            self.data.filename = filename
+            os.chdir(path)
+            data = get_data(file)
+            data.filename = filename
+            if filename not in self.datadict:
+                self.datadict[filename] = data
+                self.open_item_list.addItem(filename)
+    layout = self.graphlayout
+    self.clearLayout(self.graphlayout)
+    self.figurecanvas = plotting_tools.plotGraphOnCanvas(self, layout,
+                                                         title=filename, scale="log", marker=None)
+    self.figurecanvas[1].canvas.mpl_connect('button_press_event', self.on_press)
+    self.figurecanvas[1].canvas.mpl_connect('motion_notify_event', self.on_hover)
+    self.figurecanvas[1].canvas.mpl_connect('button_release_event', self.on_release)
 
 
 def get_data(path):
@@ -66,8 +119,10 @@ def create_layout(self, canvas, layout):
     layout.addWidget(toolbar)
 
 
-def get_path(documenttype="Text file (*.txt);;All Files (*)"):
-    options = QFileDialog.Options()
+def get_path(self, documenttype="Text file (*.txt);;All Files (*)"):
+    dialog = QFileDialog
+    options = dialog.Options()
     options |= QFileDialog.DontUseNativeDialog
-    path = QFileDialog.getOpenFileName(None, "QFileDialog.getOpenFileName()", "", documenttype, options=options)[0]
+    path = QFileDialog.getOpenFileNames(self, "Open files", "",
+                                        documenttype, options=options)[0]
     return path
