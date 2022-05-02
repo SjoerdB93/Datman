@@ -34,6 +34,11 @@ class CallUI(QtBaseClass, Ui_MainWindow):
         self.shift_vertically_button.clicked.connect(lambda: datman.shift_vertically(self))
         self.center_button.clicked.connect(lambda: datman.center_data(self))
         self.selection_button.clicked.connect(lambda: datman.select_data_button(self))
+        self.multiply_x_button.clicked.connect(lambda: datman.multiply_x(self))
+        self.multiply_y_button.clicked.connect(lambda: datman.multiply_y(self))
+        self.translate_x_button.clicked.connect(lambda: datman.translate_x(self))
+        self.translate_y_button.clicked.connect(lambda: datman.translate_y(self))
+
 
     def clearLayout(self, layout):
         while layout.count():
@@ -86,20 +91,24 @@ class CallUI(QtBaseClass, Ui_MainWindow):
             array = np.stack([xdata, ydata], axis=1)
             np.savetxt(filename, array, delimiter="\t")
         elif len(self.datadict) > 1:
-            path = self.saveFileDialog()[0]
+            path = QFileDialog.getExistingDirectory(self,"Choose Directory")
+            print(path)
             for key, item in self.datadict.items():
                 xdata = item.xdata
                 ydata = item.ydata
                 filename = item.filename
                 filename = filename.split(".")[0]
-                filename = f"{path}{filename}_edited.txt"
+                if "/" in path:
+                    filename = f"{path}/{filename}_edited.txt"
+                else:
+                    filename = f"{path}\{filename}_edited.txt"
                 array = np.stack([xdata, ydata], axis=1)
                 np.savetxt(filename, array, delimiter="\t")
 
     def saveFileDialog(self, documenttype="Text file (*.txt)"):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", self.data.filename[:-4],
+        fileName = QFileDialog.getSaveFileName(self, "Save your file", self.data.filename[:-4],
                                                documenttype, options=options)
         return fileName
 

@@ -53,6 +53,31 @@ def normalize(ydata):
     new_y = [value / max_y for value in ydata]
     return new_y
 
+def translate_y(self):
+    for key, item in self.datadict.items():
+        translate_value = float(self.translate_y_entry.text())
+        item.ydata = [value + translate_value for value in item.ydata]
+    self.plot_figure()
+
+def translate_x(self):
+    for key, item in self.datadict.items():
+        translate_value = float(self.translate_x_entry.text())
+        print(translate_value)
+        item.xdata = [value + translate_value for value in item.xdata]
+    self.plot_figure()
+
+def multiply_y(self):
+    for key, item in self.datadict.items():
+        multiply_value = float(self.multiply_y_entry.text())
+        item.ydata = [value * multiply_value for value in item.ydata]
+    self.plot_figure()
+
+def multiply_x(self):
+    for key, item in self.datadict.items():
+        multiply_value = float(self.multiply_x_entry.text())
+        item.xdata = [value * multiply_value for value in item.xdata]
+    self.plot_figure()
+
 def cut_data(self):
     for key, item in self.datadict.items():
         xdata = item.xdata
