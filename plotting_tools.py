@@ -12,7 +12,7 @@ def plotGraphOnCanvas(self, layout, title = "", scale="log", marker = None, reve
     for key, item in self.datadict.items():
         X = item.xdata
         Y = item.ydata
-        plotgGraphFigure(X, Y, canvas, filename=key, revert=revert, title=title)
+        plotgGraphFigure(X, Y, canvas, filename=key, revert=revert, title=title, scale=scale)
     layout.addWidget(canvas)
     figurecanvas = [figure, canvas]
     self.toolbar = NavigationToolbar(canvas, self)
@@ -45,3 +45,4 @@ class PlotWidget(FigureCanvas):
         self.theplot.set_xlabel(xlabel)
         self.theplot.set_ylabel(ylabel)
         self.figure.set_tight_layout(True)
+        self.theplot.set_yscale("log")

@@ -40,6 +40,7 @@ class CallUI(QtBaseClass, Ui_MainWindow):
         self.multiply_y_button.clicked.connect(lambda: datman.multiply_y(self))
         self.translate_x_button.clicked.connect(lambda: datman.translate_x(self))
         self.translate_y_button.clicked.connect(lambda: datman.translate_y(self))
+        self.smooth_button.clicked.connect(lambda: datman.smoothen_data(self))
 
     def clear_layout(self, layout):
         while layout.count():

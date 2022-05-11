@@ -3,8 +3,10 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from PyQt5.QtWidgets import QFileDialog
 from pathlib import Path
 import os
+from scipy.signal import savgol_filter
+import numpy as np
 from data import Data
-
+import re
 
 def select_data_button(self):
     if not self.selection_button.isChecked():
@@ -59,7 +61,7 @@ def center_data(self):
 
 def center_data_calculation(xdata, ydata):
     max_value = max(ydata)
-    middle_index = xdata.index(max_value)
+    middle_index = ydata.index(max_value)
     middle_value = xdata[middle_index]
     xdata = [coordinate - middle_value for coordinate in xdata]
     return xdata
@@ -114,6 +116,23 @@ def multiply_x(self):
         self.datadict[key].xdata = [value * multiply_value for value in self.datadict[key].xdata]
     self.plot_figure()
 
+def smoothen_data(self):
+    if self.edit_all_button.isChecked():
+        for key, item in self.datadict.items():
+            ydata = item.ydata
+            item.ydata = smooth(ydata, 3)
+    else:
+        print("Button is not checked!")
+        key = self.open_item_list.currentItem().text()
+        ydata = self.datadict[key].ydata
+        self.datadict[key].ydata = smooth(ydata, 5)
+    self.plot_figure()
+
+def smooth(y, box_points):
+    box = np.ones(box_points)/box_points
+    y_smooth = np.convolve(y, box, mode = "same")
+    return y_smooth
+
 
 def cut_data(self):
     for key, item in self.datadict.items():
@@ -142,11 +161,17 @@ def open_selection(self, files):
             self.data.filename = filename
             os.chdir(path)
             data = get_data(file)
-            data.filename = filename
-            if filename not in self.datadict:
-                self.datadict[filename] = data
-                self.open_item_list.addItem(filename)
-    self.plot_figure()
+            print(str(len(data.xdata)) + "HALLO!")
+            print(str(len(data.ydata)) + "HALLO!")
+
+            if (len(data.xdata) != len(data.ydata)) or len(data.xdata) == 0:
+                break
+            else:
+                data.filename = filename
+                if filename not in self.datadict:
+                    self.datadict[filename] = data
+                    self.open_item_list.addItem(filename)
+            self.plot_figure()
 
 
 def define_canvas(self):
@@ -160,13 +185,17 @@ def define_canvas(self):
 
 def get_data(path):
     data = Data()
-    seperator = "\t"
+    seperator = "\t "
     data_array = [[], []]
     with (open(path, 'r')) as file:
         for line in file:
-            line = line.split(seperator)
-            data_array[0].append(float(line[0]))
-            data_array[1].append(float(line[1]))
+            line = line.strip()
+            line = re.split('\s+', line)
+            try:
+                data_array[0].append(float(line[0]))
+                data_array[1].append(float(line[1]))
+            except ValueError:
+                pass
     data.xdata = data_array[0]
     data.ydata = data_array[1]
     return data
