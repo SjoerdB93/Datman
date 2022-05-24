@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="dcc4e18e-91a2-4c94-93eb-8a836b5767b7" name="Changes" comment="Added single-selection mode">
+    <list default="true" id="dcc4e18e-91a2-4c94-93eb-8a836b5767b7" name="Changes" comment="Fixed dataclass, should work on Windows now">
+      <change afterPath="$PROJECT_DIR$/graph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CallUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/CallUI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/datman.py" beforeDir="false" afterPath="$PROJECT_DIR$/datman.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/form.ui" beforeDir="false" afterPath="$PROJECT_DIR$/form.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/plotting_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/plotting_tools.py" afterDir="false" />
@@ -154,7 +154,14 @@
       <option name="project" value="LOCAL" />
       <updated>1651520312564</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Fixed dataclass, should work on Windows now">
+      <created>1652259927129</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1652259927129</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -174,6 +181,7 @@
     <MESSAGE value="Added following functionalities: Normalize data, center data, vertical shift, select/unselect data." />
     <MESSAGE value="Fixed a bug where filename when saving multiple files" />
     <MESSAGE value="Added single-selection mode" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added single-selection mode" />
+    <MESSAGE value="Fixed dataclass, should work on Windows now" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed dataclass, should work on Windows now" />
   </component>
 </project>

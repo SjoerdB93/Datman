@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QFileDialog
 import plotting_tools
 from data import Data
 import datman
-import pywinauto
+from graph import Graph
 import numpy as np
 
 Ui_MainWindow, QtBaseClass = uic.loadUiType("form.ui")
@@ -23,6 +23,7 @@ class CallUI(QtBaseClass, Ui_MainWindow):
         self.setupUi(self)
         self.clicked = False
         self.data = Data()
+        self.graph = Graph()
         self.connect_actions()
         datman.load_empty(self)
 
@@ -41,6 +42,11 @@ class CallUI(QtBaseClass, Ui_MainWindow):
         self.translate_x_button.clicked.connect(lambda: datman.translate_x(self))
         self.translate_y_button.clicked.connect(lambda: datman.translate_y(self))
         self.smooth_button.clicked.connect(lambda: datman.smoothen_data(self))
+        self.smooth_log_button.clicked.connect(lambda: datman.smoothen_data_logscale(self))
+        self.translate_x_button.clicked.connect(lambda: datman.translate_x(self))
+        self.yscale_button.clicked.connect(lambda: plotting_tools.change_scale(self))
+        self.xscale_button.clicked.connect(lambda: plotting_tools.change_scale(self, scale="xscale"))
+
 
     def clear_layout(self, layout):
         while layout.count():
@@ -50,9 +56,11 @@ class CallUI(QtBaseClass, Ui_MainWindow):
 
     def on_press(self, event):
         self.clicked = True
+        self.hover = False
         self.startx = event.xdata
 
     def on_hover(self, event):
+        self.hover = False
         if self.clicked == True and self.selection_button.isChecked():
             self.stopx = event.xdata
             self.hover = True
@@ -60,6 +68,7 @@ class CallUI(QtBaseClass, Ui_MainWindow):
     def on_release(self, event):
         self.clicked = False
         if self.selection_button.isChecked() and self.hover:
+            print("Yo")
             self.select_data()
         self.hover = False
 

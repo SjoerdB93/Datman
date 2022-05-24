@@ -3,7 +3,6 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from PyQt5.QtWidgets import QFileDialog
 from pathlib import Path
 import os
-from scipy.signal import savgol_filter
 import numpy as np
 from data import Data
 import re
@@ -126,6 +125,24 @@ def smoothen_data(self):
         key = self.open_item_list.currentItem().text()
         ydata = self.datadict[key].ydata
         self.datadict[key].ydata = smooth(ydata, 5)
+    self.plot_figure()
+
+def smoothen_data_logscale(self):
+    if self.edit_all_button.isChecked():
+        for key, item in self.datadict.items():
+            ydata = item.ydata
+            print(f"Creating log scale, max value first is {max(item.ydata)}")
+            item.ydata = [np.log(value) for value in item.ydata]
+            item.ydata = smooth(item.ydata, 5)
+            item.ydata = np.exp(item.ydata)
+    else:
+        print("Button is not checked!")
+        key = self.open_item_list.currentItem().text()
+        ydata = self.datadict[key].ydata
+        ydata = [np.log(value) for value in ydata]
+        ydata = smooth(ydata, 5)
+        ydata = np.exp(ydata)
+        self.datadict[key].y = ydata
     self.plot_figure()
 
 def smooth(y, box_points):
