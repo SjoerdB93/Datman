@@ -178,9 +178,6 @@ def open_selection(self, files):
             self.data.filename = filename
             os.chdir(path)
             data = get_data(file)
-            print(str(len(data.xdata)) + "HALLO!")
-            print(str(len(data.ydata)) + "HALLO!")
-
             if (len(data.xdata) != len(data.ydata)) or len(data.xdata) == 0:
                 break
             else:

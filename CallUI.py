@@ -19,7 +19,6 @@ class CallUI(QtBaseClass, Ui_MainWindow):
         self.hover = False
         self.figurecanvas = None
         self.datadict = {}
-        print(self.datadict)
         self.setupUi(self)
         self.clicked = False
         self.data = Data()
@@ -68,7 +67,6 @@ class CallUI(QtBaseClass, Ui_MainWindow):
     def on_release(self, event):
         self.clicked = False
         if self.selection_button.isChecked() and self.hover:
-            print("Yo")
             self.select_data()
         self.hover = False
 
@@ -108,7 +106,6 @@ class CallUI(QtBaseClass, Ui_MainWindow):
             np.savetxt(filename, array, delimiter="\t")
         elif len(self.datadict) > 1:
             path = QFileDialog.getExistingDirectory(self, "Choose Directory")
-            print(path)
             for key, item in self.datadict.items():
                 xdata = item.xdata
                 ydata = item.ydata
